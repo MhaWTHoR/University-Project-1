@@ -7,7 +7,8 @@ yeter=0
 count = 2
 main_link = "https://rekvizitai.vz.lt/en/companies/odonthology_services/"
 data_set = {}
-for count in range(2,116):
+key_list = ["Registration code","Manager","Address","Mobile phone","Website"];
+for count in range(2,10):
     print("Üzerinde çalışılan sayfa="+str(count))
     print("Kalan sayfa sayısı="+str(115-count))
     if count == 2:
@@ -33,18 +34,21 @@ for count in range(2,116):
         company_url = company_dic[company]
         browser.get(company_url)
 
-        dom = browser.find_elements(By.XPATH,"""//div[@class='details-block__1']//td[@class='name' and contains(text(),"Registration code")] | //div[@class='details-block__1']//td[@class='name' and contains(text(),"Registration code")]/following-sibling::* |
+        dom = browser.find_elements(By.XPATH,"""//div[@class='details-block__1']//td[@class='name' and contains(text(),"Registration code")] | 
+//div[@class='details-block__1']//td[@class='name' and contains(text(),"Registration code")]/following-sibling::* |
 //div[@class='details-block__2']//td[@class='name' and contains(text(),"Manager")] |
-//div[@class='details-block__2']//td[@class='name' and contains(text(),"Address")] |
-//div[@class='details-block__2']//td[@class='name' and contains(text(),"Mobile phone")] |
-//div[@class='details-block__2']//td[@class='name' and contains(text(),"Website")] |
-//div[@class='details-block__2']//td[@class='name' and contains(text(),"Website")]/following-sibling::* |
 //div[@class='details-block__2']//td[@class='name' and contains(text(),"Manager")]/following-sibling::* |
+//div[@class='details-block__2']//td[@class='name' and contains(text(),"Address")] |
 //div[@class='details-block__2']//td[@class='name' and contains(text(),"Address")]/following-sibling::* |
-//div[@class='details-block__2']//td[@class='name' and contains(text(),"Mobile phone")]/following-sibling::*""")
+//div[@class='details-block__2']//td[@class='name' and contains(text(),"Mobile phone")] |
+//div[@class='details-block__2']//td[@class='name' and contains(text(),"Mobile phone")]/following-sibling::* |
+//div[@class='details-block__2']//td[@class='name' and contains(text(),"Website")] |
+//div[@class='details-block__2']//td[@class='name' and contains(text(),"Website")]/following-sibling::*
+""")
 
         temp_data_set = {}
         print(len(dom))
+
         for i in range(1, len(dom), 2):
             if dom[i - 1].text == "Mobile phone":
                 imgElement = dom[i - 1].find_element(By.XPATH, "//img[@class='marginTop3']")
@@ -53,9 +57,9 @@ for count in range(2,116):
                 continue
             if dom[i-1].text == "Email address":
                 continue
+
             temp_data_set[dom[i - 1].text] = dom[i].text;
         data_set[company_name] = temp_data_set
-key_list = data_set[list(data_set.keys())[0]].keys();
 
 a = Airium()
 with a.table(style='border: 1px solid black; border-collapse:collapse;'):
