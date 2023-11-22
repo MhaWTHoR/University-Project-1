@@ -1,4 +1,3 @@
-
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from airium import Airium
@@ -8,7 +7,7 @@ yeter=0
 count = 2
 main_link = "https://rekvizitai.vz.lt/en/companies/odonthology_services/"
 data_set = {}
-for count in range(2,116):
+for count in range(2,10):
     print("Üzerinde çalışılan sayfa="+str(count))
     print("Kalan sayfa sayısı="+str(115-count))
     if count == 2:
@@ -42,8 +41,7 @@ for count in range(2,116):
 //div[@class='details-block__2']//td[@class='name' and contains(text(),"Website")]/following-sibling::* |
 //div[@class='details-block__2']//td[@class='name' and contains(text(),"Manager")]/following-sibling::* |
 //div[@class='details-block__2']//td[@class='name' and contains(text(),"Address")]/following-sibling::* |
-//div[@class='details-block__2']//td[@class='name' and contains(text(),"Mobile phone")]/following-sibling::* |
-//div[@class='details-block__2']//td[@class='name' and contains(text(),"Website")]/following-sibling::*""")
+//div[@class='details-block__2']//td[@class='name' and contains(text(),"Mobile phone")]/following-sibling::*""")
 
         temp_data_set = {}
         print(len(dom))
@@ -84,5 +82,3 @@ with a.table(style='border: 1px solid black; border-collapse:collapse;'):
         f.write(write_it)
 
 print("İşlem tamamlandı")
-
-
