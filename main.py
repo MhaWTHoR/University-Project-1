@@ -7,7 +7,7 @@ yeter=0
 count = 2
 main_link = "https://rekvizitai.vz.lt/en/companies/odonthology_services/"
 data_set = {}
-for count in range(2,10):
+for count in range(2,116):
     print("Üzerinde çalışılan sayfa="+str(count))
     print("Kalan sayfa sayısı="+str(115-count))
     if count == 2:
