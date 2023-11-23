@@ -17,13 +17,16 @@ def company_name():
 def get_img_src(browser, reg_code):
     #imgElement = (WebDriverWait(browser, 10).
     #              until(EC.presence_of_element_located((By.XPATH, "//img[@class='marginTop3']"))))
-    imgElement = browser.execute_script("""return document.querySelector("img.marginTop3").attributes""")
-    source = imgElement[0]["baseURI"]+""+imgElement[0]["value"]
+    try:
+        imgElement = browser.execute_script("""return document.querySelector("img.marginTop3").attributes""")
+        source = imgElement[0]["baseURI"] + "" + imgElement[0]["value"]
+    except:
+        source = "not-exist"
+
 
     img_data = requests.get(source).content
     with open('numbers/' + reg_code + ".gif", "wb") as f:
         f.write(img_data)
-        print("written")
 
 
     return "Will be replaced"
