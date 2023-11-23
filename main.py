@@ -21,7 +21,8 @@ def get_img_src(browser, reg_code):
         imgElement = browser.execute_script("""return document.querySelector("img.marginTop3").attributes""")
         source = imgElement[0]["baseURI"] + "" + imgElement[0]["value"]
     except:
-        source = "not-exist"
+        source = "https://?"
+        return "no-exist"
 
 
     img_data = requests.get(source).content
@@ -63,7 +64,7 @@ count = 2
 main_link = "https://rekvizitai.vz.lt/en/companies/odonthology_services/"
 data_set = {}
 key_list = ["Company name", "Registration code", "Manager", "Address", "Mobile phone", "Website"];
-for count in range(2, 116):
+for count in range(93, 116):
     print("Üzerinde çalışılan sayfa=" + str(count))
     print("Kalan sayfa sayısı=" + str(115 - count))
     if count == 2:
