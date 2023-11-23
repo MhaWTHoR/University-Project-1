@@ -2,22 +2,70 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from airium import Airium
 
+
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+def element_and_sibling(formatting):
+    return """//td[@class='name' and contains(text(),"{0}")]|//td[@class='name' and contains(text(),"{0}")]/following-sibling::*""".format((formatting))
+def company_name():
+    return "//div[@class='top-info p-0']//h1"
+def get_img_src(browser):
+    try:
+
+        imgElement = WebDriverWait(browser,10).until(EC.presence_of_element_located((By.XPATH, "//img[@class='marginTop3']")))
+        source = imgElement.get_attribute('src')
+
+    except:
+        source = "not exists"
+
+    return source
+def get_element_and_next_sibling_dom(list_key,browser_object):
+    temp_data_set = {};
+    #sirket adini ayri cekiyorum
+
+
+
+    for temp in list_key:
+        if temp == "Company name":
+            company_name_object = browser_object.find_element(By.XPATH,"//div[@class='top-info p-0']//h1")
+            temp_data_set["Company name"] = company_name_object.text
+            continue
+        element_n_sibling = element_and_sibling(temp)
+        dom = browser_object.find_elements(By.XPATH,element_n_sibling)
+        if len(dom) == 0 and temp =="Mobile phone":
+            print(temp+"=Bu değişik mobile phone yok")
+            dom = browser_object.find_elements(By.XPATH, element_and_sibling("Phone"))
+            temp_data_set["Mobile phone"] = get_img_src(browser)
+            continue
+        if len(dom) == 0:
+            print(temp+"=Bunda tek data dönüyo")
+            temp_data_set[temp] = "Not exists"
+            continue
+        if temp =="Mobile phone":
+
+            temp_data_set[temp] = get_img_src(browser)
+            continue
+        temp_data_set[dom[0].text] = dom[1].text
+    return temp_data_set
+
 browser = webdriver.Chrome()
-yeter=0
+yeter = 0
 count = 2
 main_link = "https://rekvizitai.vz.lt/en/companies/odonthology_services/"
 data_set = {}
-key_list = ["Registration code","Manager","Address","Mobile phone","Website"];
-for count in range(2,10):
-    print("Üzerinde çalışılan sayfa="+str(count))
-    print("Kalan sayfa sayısı="+str(115-count))
+key_list = ["Company name","Registration code", "Manager", "Address", "Mobile phone", "Website"];
+for count in range(2, 116):
+    print("Üzerinde çalışılan sayfa=" + str(count))
+    print("Kalan sayfa sayısı=" + str(115 - count))
     if count == 2:
         browser.get(main_link)
     else:
-        browser.get(main_link+str(count))
+        browser.get(main_link + str(count))
 
     captcha_needed = browser.find_elements(By.XPATH,
-                                                   "//input[@id='security_code']")
+                                           "//input[@id='security_code']")
 
     if (len(captcha_needed) == 1):
         approve_captcha = input("Captchayı girince entera basın.")
@@ -28,38 +76,11 @@ for count in range(2,10):
     for temp in company_list:
         company_dic[temp.text] = temp.get_attribute('href')
     for company in company_dic:
-        yeter += 1
-
         company_name = company
         company_url = company_dic[company]
         browser.get(company_url)
-
-        dom = browser.find_elements(By.XPATH,"""//div[@class='details-block__1']//td[@class='name' and contains(text(),"Registration code")] | 
-//div[@class='details-block__1']//td[@class='name' and contains(text(),"Registration code")]/following-sibling::* |
-//div[@class='details-block__2']//td[@class='name' and contains(text(),"Manager")] |
-//div[@class='details-block__2']//td[@class='name' and contains(text(),"Manager")]/following-sibling::* |
-//div[@class='details-block__2']//td[@class='name' and contains(text(),"Address")] |
-//div[@class='details-block__2']//td[@class='name' and contains(text(),"Address")]/following-sibling::* |
-//div[@class='details-block__2']//td[@class='name' and contains(text(),"Mobile phone")] |
-//div[@class='details-block__2']//td[@class='name' and contains(text(),"Mobile phone")]/following-sibling::* |
-//div[@class='details-block__2']//td[@class='name' and contains(text(),"Website")] |
-//div[@class='details-block__2']//td[@class='name' and contains(text(),"Website")]/following-sibling::*
-""")
-
-        temp_data_set = {}
-        print(len(dom))
-
-        for i in range(1, len(dom), 2):
-            if dom[i - 1].text == "Mobile phone":
-                imgElement = dom[i - 1].find_element(By.XPATH, "//img[@class='marginTop3']")
-                mobile_link = imgElement.get_attribute('src')
-                temp_data_set[dom[i - 1].text] = mobile_link
-                continue
-            if dom[i-1].text == "Email address":
-                continue
-
-            temp_data_set[dom[i - 1].text] = dom[i].text;
-        data_set[company_name] = temp_data_set
+        result = get_element_and_next_sibling_dom(key_list,browser)
+        data_set[company_name] = result
 
 a = Airium()
 with a.table(style='border: 1px solid black; border-collapse:collapse;'):
@@ -69,20 +90,21 @@ with a.table(style='border: 1px solid black; border-collapse:collapse;'):
     for company in data_set:
         with a.tr():
             for details in data_set[company]:
-                print(details+"=details")
-                if details=="Mobile phone":
-                    with a.td(style='border:1px solid black;',):
-                        a.img(src=data_set[company][details],alt="phone-number")
+                if details == "Mobile phone":
+                    with a.td(style='border:1px solid black;', ):
+                        a.img(src=data_set[company][details], alt="phone-number")
                         continue
-                if details=="Website":
-                    with a.td(style='border:1px solid black;',):
-                        a.a(href=data_set[company][details], _t="Siteye Git",target="_blank")
+                if details == "Website":
+                    with a.td(style='border:1px solid black;', ):
+                        a.a(href=data_set[company][details], _t="Siteye Git", target="_blank")
                 a.td(style='border:1px solid black;', _t=data_set[company][details])
 
-                print(details + ":" + data_set[company][details])
     write_it = str(a);
 
     with open(r'result.html', 'w', encoding='utf8') as f:
         f.write(write_it)
 
 print("İşlem tamamlandı")
+
+
+
