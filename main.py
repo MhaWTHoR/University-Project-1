@@ -105,6 +105,3 @@ with a.table(style='border: 1px solid black; border-collapse:collapse;'):
         f.write(write_it)
 
 print("İşlem tamamlandı")
-
-
-
